@@ -31,23 +31,32 @@ pipeline {
     //   }
     // }
 
+// stage('Debug') {
+//   steps {
+//     script {
+//       def branchOrTag = sh(script: 'git name-rev --name-only HEAD', returnStdout: true).trim()
+//       echo "Branch or Tag: ${branchOrTag}"
+
+//       // Check if it is a tag
+//       if (branchOrTag.startsWith("tags/")) {
+//         def tagName = branchOrTag.replace("tags/", "")
+//         echo "This is a tag build: ${tagName}"
+//       } else {
+//         echo "This is a branch build: ${branchOrTag}"
+//       }
+
+//       sh 'env'
+//     }
+//   }
+// }
+
 stage('Debug') {
-  steps {
-    script {
-      def branchOrTag = sh(script: 'git name-rev --name-only HEAD', returnStdout: true).trim()
-      echo "Branch or Tag: ${branchOrTag}"
-
-      // Check if it is a tag
-      if (branchOrTag.startsWith("tags/")) {
-        def tagName = branchOrTag.replace("tags/", "")
-        echo "This is a tag build: ${tagName}"
-      } else {
-        echo "This is a branch build: ${branchOrTag}"
-      }
-
-      sh 'env'
+    steps {
+        script {
+            echo "Branch or Tag: ${env.GIT_BRANCH}"
+            sh 'git describe --tags --exact-match || echo "Not a tag"'
+        }
     }
-  }
 }
 
     stage('Release on tag creation') {
