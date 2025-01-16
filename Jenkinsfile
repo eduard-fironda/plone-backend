@@ -31,49 +31,10 @@ pipeline {
     //   }
     // }
 
-// stage('Debug') {
-//   steps {
-//     script {
-//       def branchOrTag = sh(script: 'git name-rev --name-only HEAD', returnStdout: true).trim()
-//       echo "Branch or Tag: ${branchOrTag}"
-
-//       // Check if it is a tag
-//       if (branchOrTag.startsWith("tags/")) {
-//         def tagName = branchOrTag.replace("tags/", "")
-//         echo "This is a tag build: ${tagName}"
-//       } else {
-//         echo "This is a branch build: ${branchOrTag}"
-//       }
-
-//       sh 'env'
-//     }
-//   }
-// }
-
-// stage('Debug') {
-//     steps {
-//         script {
-//             echo "Branch or Tag: ${env.GIT_BRANCH}"
-//             sh 'git describe --tags --exact-match || echo "Not a tag"'
-//         }
-//     }
-// }
-
-stage('Debug') {
-    steps {
-        script {
-            echo "Branch Name: ${env.BRANCH_NAME}"
-            echo "Git Branch: ${env.GIT_BRANCH}"
-            sh 'git describe --tags --exact-match || echo "No exact tag match"'
-            sh 'env'
-        }
-    }
-}
-
     stage('Release on tag creation') {
-      when {
-        buildingTag()
-      }
+      // when {
+      //   buildingTag()
+      // }
       steps{
           withCredentials([string(credentialsId: 'eddie-eea-jenkins-token', variable: 'GITHUB_TOKEN'),  usernamePassword(credentialsId: 'eddie-jekinsdockerhub', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
            sh '''docker pull eeacms/gitflow; docker run -i --rm --name="$BUILD_TAG"  -e GIT_BRANCH="$BRANCH_NAME" -e GIT_NAME="$GIT_NAME" -e DOCKERHUB_REPO="eduardvalentin/plone-backend" -e GIT_TOKEN="$GITHUB_TOKEN" -e DOCKERHUB_USER="$DOCKERHUB_USER" -e DOCKERHUB_PASS="$DOCKERHUB_PASS" -e DEPENDENT_DOCKERFILE_URL="eea/eea-website-backend/blob/master/Dockerfile eea/fise-backend/blob/master/Dockerfile eea/advisory-board-backend/blob/master/Dockerfile eea/bise-backend/blob/plone-6/Dockerfile" -e GITFLOW_BEHAVIOR="RUN_ON_TAG" eeacms/gitflow'''
