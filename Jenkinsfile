@@ -50,11 +50,22 @@ pipeline {
 //   }
 // }
 
+// stage('Debug') {
+//     steps {
+//         script {
+//             echo "Branch or Tag: ${env.GIT_BRANCH}"
+//             sh 'git describe --tags --exact-match || echo "Not a tag"'
+//         }
+//     }
+// }
+
 stage('Debug') {
     steps {
         script {
-            echo "Branch or Tag: ${env.GIT_BRANCH}"
-            sh 'git describe --tags --exact-match || echo "Not a tag"'
+            echo "Branch Name: ${env.BRANCH_NAME}"
+            echo "Git Branch: ${env.GIT_BRANCH}"
+            sh 'git describe --tags --exact-match || echo "No exact tag match"'
+            sh 'env'
         }
     }
 }
