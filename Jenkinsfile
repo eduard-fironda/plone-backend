@@ -30,7 +30,17 @@ pipeline {
     //       }
     //   }
     // }
- 
+
+    stage('Debug') {
+    steps {
+        script {
+            echo "Branch: ${env.BRANCH_NAME}"
+            echo "Tag: ${env.GIT_TAG}"
+            sh 'env'
+        }
+    }
+}
+
     stage('Release on tag creation') {
       when {
         buildingTag()
