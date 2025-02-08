@@ -34,9 +34,8 @@ pipeline {
                 docker buildx build --platform linux/amd64,linux/arm64 \
                   --no-cache \
                   -t ${IMAGE_NAME}:${TAG} \
-                  --output type=oci,dest=plone-backend.tar .
+                  --push .
               '''                
-              sh '''docker load < plone-backend.tar'''
               sh '''./test/run.sh ${IMAGE_NAME}:${TAG}'''
             } finally {
               sh script: "docker rmi ${IMAGE_NAME}:${TAG}", returnStatus: true
