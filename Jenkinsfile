@@ -22,7 +22,20 @@ pipeline {
               sh '''docker -v'''
               sh '''hostname'''
               // sh '''docker ps -a | grep dind'''
-              sh '''docker build --no-cache -t ${IMAGE_NAME}:${TAG} .'''
+              // sh '''docker build --no-cache -t ${IMAGE_NAME}:${TAG} .'''
+              sh '''
+              if ! docker buildx inspect multiarch-builder > /dev/null 2>&1; then
+                docker buildx create --name multiarch-builder --use
+              else
+                docker buildx use multiarch-builder
+              fi
+              '''
+              sh '''
+                docker buildx build --platform linux/amd64,linux/arm64 \
+                  --no-cache \
+                  -t ${IMAGE_NAME}:${TAG} \
+                  -- load .
+              '''                
               sh '''./test/run.sh ${IMAGE_NAME}:${TAG}'''
             } finally {
               sh script: "docker rmi ${IMAGE_NAME}:${TAG}", returnStatus: true
