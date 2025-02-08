@@ -34,7 +34,7 @@ pipeline {
                 docker buildx build --platform linux/amd64,linux/arm64 \
                   --no-cache \
                   -t ${IMAGE_NAME}:${TAG} \
-                  -- load .
+                  --load .
               '''                
               sh '''./test/run.sh ${IMAGE_NAME}:${TAG}'''
             } finally {
