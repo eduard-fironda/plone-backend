@@ -16,7 +16,6 @@ pipeline {
         TAG = BUILD_TAG.toLowerCase()
       }
       steps {
-        {
           script {
             try {
               checkout scm
@@ -29,7 +28,6 @@ pipeline {
               sh script: "docker rmi ${IMAGE_NAME}:${TAG}", returnStatus: true
             }
           }
-        }
       }
     }
  
