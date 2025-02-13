@@ -1,11 +1,54 @@
-name: eeacms/plone-backend
-on: [push]
+# name: eeacms/plone-backend
+# on: [push]
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     steps:
+#     - uses: actions/checkout@v2
+#     - name: Build & Test Plone
+#       run: |
+#         docker build -t eeacms/plone-backend:dev .
+#         ./test/run.sh eeacms/plone-backend:dev
+
+name: Build and Push ARM Docker Image
+
+on:
+  push:
+    tags:
+      - '*'
+
+env:
+  IMAGE_NAME: eduardvalentin/plone-backend
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Build & Test Plone
-      run: |
-        docker build -t eeacms/plone-backend:dev .
-        ./test/run.sh eeacms/plone-backend:dev
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Determine Docker tag
+        id: vars
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo "version=$VERSION" >> $GITHUB_ENV
+
+      - name: Build and push Docker image (ARM)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/arm64
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.version }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+          no-cache: true
