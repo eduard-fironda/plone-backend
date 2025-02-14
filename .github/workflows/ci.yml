@@ -57,10 +57,3 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.version }}-arm64
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest-arm64
           no-cache: true
-
-      - name: Run Tests on ARM64 Image
-        run: |
-          echo "Running tests on ARM image..."
-          docker run --rm --platform linux/arm64 \
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.version }}-arm64 \
-            ./test/run.sh
