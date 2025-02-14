@@ -1,41 +1,11 @@
-name: eduardvalentin/plone-backend
+name: eeacms/plone-backend
 on: [push]
-
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        platform: [linux/amd64, linux/arm64]
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up QEMU for ARM emulation
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to DockerHub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build Docker Image for ${{ matrix.platform }}
-        run: |
-          TAG="eduardvalentin/plone-backend:dev-$(echo ${{ matrix.platform }} | tr '/' '_')"
-          echo "Building image: $TAG"
-          docker buildx build \
-            --platform ${{ matrix.platform }} \
-            -t $TAG \
-            --load \
-            .
-
-      - name: Run Tests for ${{ matrix.platform }}
-        run: |
-          TAG="eduardvalentin/plone-backend:dev-$(echo ${{ matrix.platform }} | tr '/' '_')"
-          echo "Testing image: $TAG"
-          docker run --rm --platform ${{ matrix.platform }} $TAG ./test/run.sh
+    - uses: actions/checkout@v2
+    - name: Build & Test Plone
+      run: |
+        docker build -t eeacms/plone-backend:dev .
+        ./test/run.sh eeacms/plone-backend:dev

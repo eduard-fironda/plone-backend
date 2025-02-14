@@ -10,15 +10,9 @@ ENV PLONE_VERSION=6.0.13 \
     ZOPE_FORM_MEMORY_LIMIT=250MB \
     PROFILES=eea.kitkat:default
 
-# RUN apt-get update \
-#     && buildDeps="build-essential libldap2-dev libsasl2-dev" \
-#     && apt-get install -y --no-install-recommends $buildDeps\
-#     && rm -rf /var/lib/apt/lists/* /usr/share/doc
-
-RUN sed -i 's|http://archive.ubuntu.com|http://ports.ubuntu.com|g' /etc/apt/sources.list \
-    && apt-get update || (sleep 5 && apt-get update) \
+RUN apt-get update \
     && buildDeps="build-essential libldap2-dev libsasl2-dev" \
-    && apt-get install -y --no-install-recommends $buildDeps \
+    && apt-get install -y --no-install-recommends $buildDeps\
     && rm -rf /var/lib/apt/lists/* /usr/share/doc
 
 COPY requirements.txt constraints.txt /app/
