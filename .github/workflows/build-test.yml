@@ -26,13 +26,16 @@ jobs:
 
       - name: Build Docker Image for ${{ matrix.platform }}
         run: |
+          TAG="eduardvalentin/plone-backend:dev-$(echo ${{ matrix.platform }} | tr '/' '_')"
+          echo "Building with tag $TAG"
           docker buildx build \
             --platform ${{ matrix.platform }} \
-            -t eduardvalentin/plone-backend:dev-${{ matrix.platform }} \
+            -t $TAG \
             --load \
             .
 
-      - name: Run Tests on ${{ matrix.platform }}
+      - name: Run Tests for ${{ matrix.platform }}
         run: |
+          TAG="eduardvalentin/plone-backend:dev-$(echo ${{ matrix.platform }} | tr '/' '_')"
           chmod +x ./test/run.sh
-          ./test/run.sh eduardvalentin/plone-backend:dev-${{ matrix.platform }}
+          ./test/run.sh $TAG
