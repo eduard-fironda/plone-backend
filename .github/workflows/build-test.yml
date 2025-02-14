@@ -12,8 +12,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # - name: Set up QEMU for ARM emulation
-      #   uses: docker/setup-qemu-action@v3
+      - name: Set up QEMU for ARM emulation
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -27,7 +27,7 @@ jobs:
       - name: Build Docker Image for ${{ matrix.platform }}
         run: |
           TAG="eduardvalentin/plone-backend:dev-$(echo ${{ matrix.platform }} | tr '/' '_')"
-          echo "Building with tag $TAG"
+          echo "Building image: $TAG"
           docker buildx build \
             --platform ${{ matrix.platform }} \
             -t $TAG \
@@ -37,5 +37,5 @@ jobs:
       - name: Run Tests for ${{ matrix.platform }}
         run: |
           TAG="eduardvalentin/plone-backend:dev-$(echo ${{ matrix.platform }} | tr '/' '_')"
-          chmod +x ./test/run.sh
-          ./test/run.sh $TAG
+          echo "Testing image: $TAG"
+          docker run --rm --platform ${{ matrix.platform }} $TAG ./test/run.sh
